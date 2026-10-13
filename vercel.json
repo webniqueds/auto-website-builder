@@ -1,0 +1,59 @@
+{
+  "buildCommand": "npx vite build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "installCommand": "npm install",
+  "functions": {
+    "api/generate-site-v2.ts": {
+      "maxDuration": 60
+    },
+    "api/generate-site.ts": {
+      "maxDuration": 60
+    },
+    "api/edit-site.ts": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/db-status",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/razorpay/create-order",
+      "destination": "/api/razorpay"
+    },
+    {
+      "source": "/api/razorpay/verify-payment",
+      "destination": "/api/razorpay"
+    },
+    {
+      "source": "/api/me/spend",
+      "destination": "/api/me"
+    },
+    {
+      "source": "/api/admin-config",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/admin-stats",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/api/plans/reset",
+      "destination": "/api/plans"
+    },
+    {
+      "source": "/api/projects/:path*",
+      "destination": "/api/projects"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

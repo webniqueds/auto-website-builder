@@ -1,0 +1,647 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --app-bg: #F8F7F4;
+  --app-fg: #111111;
+  --app-muted: #6B6B6B;
+  --app-border: #E5E4E0;
+  --app-surface: #FFFFFF;
+  --app-surface-hover: #F0EFEC;
+  --app-accent: #111111;
+  --app-radius: 9999px;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-editorial: 'Playfair Display', Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--app-bg);
+  color: var(--app-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+::selection {
+  background: var(--app-fg);
+  color: var(--app-bg);
+}
+
+* {
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition-duration: 150ms;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--app-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--app-muted);
+}
+
+.glass-pill {
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.preview-frame {
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--app-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+  height: 100%;
+  min-height: 0;
+}
+.preview-chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--app-bg);
+  border-bottom: 1px solid var(--app-border);
+}
+.preview-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--app-border);
+}
+.preview-url {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: var(--app-muted);
+  font-family: var(--font-sans);
+  text-decoration: none;
+}
+.preview-url:hover {
+  color: var(--app-fg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: var(--app-fg);
+  color: var(--app-bg);
+  border: none;
+  border-radius: var(--app-radius);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.btn-primary:hover {
+  background: #2a2a2a;
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: transparent;
+  color: var(--app-fg);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.btn-secondary:hover {
+  background: var(--app-surface-hover);
+}
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+/* Template render animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.tpl-section {
+  animation: fadeInUp 0.6s ease-out both;
+}
+.tpl-section:nth-child(2) { animation-delay: 0.1s; }
+.tpl-section:nth-child(3) { animation-delay: 0.2s; }
+.tpl-section:nth-child(4) { animation-delay: 0.3s; }
+.tpl-section:nth-child(5) { animation-delay: 0.4s; }
+.tpl-section:nth-child(6) { animation-delay: 0.5s; }
+.tpl-section:nth-child(7) { animation-delay: 0.6s; }
+.tpl-section:nth-child(8) { animation-delay: 0.7s; }
+
+.tpl-hero { animation: fadeIn 0.8s ease-out both; }
+.tpl-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.tpl-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.tpl-img {
+  background: linear-gradient(135deg, var(--muted, #ccc) 25%, transparent 25%, transparent 50%, var(--muted, #ccc) 50%, var(--muted, #ccc) 75%, transparent 75%);
+  background-size: 20px 20px;
+  animation: fadeIn 0.6s ease-out both;
+}
+.tpl-btn {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+.tpl-btn:hover { transform: scale(1.02); }
+.tpl-btn:active { transform: scale(0.98); }
+
+/* ============================================================
+   Responsive template layouts (previewed inside sandbox iframe)
+   NOTE: React 19 serialises inline styles without spaces after the
+   colon (e.g. `display:flex;padding:24px 48px`), so every
+   attribute selector here must match THAT exact format.
+   ============================================================ */
+@media (max-width: 768px) {
+  section.tpl-section,
+  section.tpl-hero {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  nav[style*="padding:24px 48px"] {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* One big card + two side cards reads badly on tablets */
+  [style*="2fr 1fr 1fr"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  [style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  [style*="repeat(3, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  section.tpl-section,
+  section.tpl-hero {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  section.tpl-hero {
+    padding-top: 40px !important;
+  }
+
+  /* Navbars: shrink padding + allow wrapping so links don't overflow */
+  nav[style*="padding:24px 48px"] {
+    padding: 16px 20px !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+  nav[style*="display:flex"] {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+  nav > div[style*="display:flex"] {
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Generic 48px-side-padding catch-all (sections only, not navs/buttons) */
+  section[style*="48px"] {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  section[style*="padding:100px 48px"] {
+    padding: 64px 24px !important;
+  }
+  section[style*="padding:80px 48px"] {
+    padding: 56px 24px !important;
+  }
+  section[style*="padding:60px 48px 0"] {
+    padding: 40px 24px 0 !important;
+  }
+  section[style*="padding:0 48px 100px"] {
+    padding: 0 24px 64px !important;
+  }
+  section[style*="padding:100px 0"] {
+    padding: 64px 24px !important;
+  }
+  /* Uncovered vertical rhythms */
+  section[style*="padding:64px 48px"] { padding: 48px 24px !important; }
+  section[style*="padding:72px 48px"] { padding: 48px 24px !important; }
+  section[style*="padding:90px 48px"] { padding: 56px 24px !important; }
+  section[style*="padding:70px 48px"] { padding: 48px 24px !important; }
+  section[style*="padding:56px 48px"] { padding: 40px 24px !important; }
+  section[style*="padding:52px 48px"] { padding: 40px 24px !important; }
+  section[style*="padding:80px 48px 120px"] { padding: 48px 24px 64px !important; }
+  section[style*="padding:80px 48px 60px"] { padding: 48px 24px 40px !important; }
+  section[style*="padding:100px 48px 120px"] { padding: 56px 24px 64px !important; }
+  section[style*="padding:100px 48px 80px"] { padding: 56px 24px 48px !important; }
+  section[style*="padding:60px 48px 90px"] { padding: 40px 24px 56px !important; }
+  section[style*="padding:60px 48px 80px"] { padding: 40px 24px 48px !important; }
+  section[style*="padding:64px 48px 0"] { padding: 40px 24px 0 !important; }
+  section[style*="padding:56px 48px 0"] { padding: 36px 24px 0 !important; }
+  section[style*="padding:40px 48px 80px"] { padding: 32px 24px 48px !important; }
+  section[style*="padding:20px 48px 80px"] { padding: 16px 24px 48px !important; }
+  section[style*="padding:70px 48px 60px"] { padding: 44px 24px 40px !important; }
+  section[style*="padding:72px 48px 40px"] { padding: 44px 24px 32px !important; }
+  section[style*="padding:48px 56px"] { padding: 40px 24px !important; }
+
+  /* Fractional two/three-column layouts collapse to one column */
+  [style*="2fr 1fr 1fr"],
+  [style*="1.1fr 1fr"],
+  [style*="1.2fr 0.8fr"],
+  [style*="1.2fr 1fr"],
+  [style*="1fr 1.6fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  [style*="repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  [style*="repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  [style*="repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  [style*="1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  [style*="1fr 2fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  [style*="140px 1fr auto"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  [style*="160px 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Let flexible flex-rows wrap instead of overflowing */
+  footer[style*="display:flex"] {
+    flex-wrap: wrap !important;
+    gap: 8px 16px !important;
+  }
+  [style*="display:flex"][style*="gap:40px"],
+  [style*="display:flex"][style*="gap:44px"],
+  [style*="display:flex"][style*="gap:48px"],
+  [style*="display:flex"][style*="gap:56px"],
+  [style*="display:flex"][style*="gap:64px"],
+  [style*="display:flex"][style*="gap:72px"],
+  [style*="display:flex"][style*="gap:80px"] {
+    flex-wrap: wrap !important;
+    gap: 16px 24px !important;
+  }
+
+  /* Stop long words / URLs from blowing out grid tracks */
+  [style*="grid-template-columns"] > * {
+    min-width: 0;
+  }
+  section[id] p,
+  section[id] li,
+  section[id] a {
+    overflow-wrap: break-word;
+  }
+
+  /* Cap leftover tall hero/story block heights */
+  [style*="height:460"] { height: 300px !important; }
+  [style*="height:380"] { height: 260px !important; }
+  [style*="height:360"] { height: 250px !important; }
+  [style*="height:340"] { height: 240px !important; }
+  [style*="height:320"] { height: 240px !important; }
+  [style*="height:300"] { height: 230px !important; }
+  [style*="height:280"] { height: 220px !important; }
+  [style*="height:260"] { height: 210px !important; }
+  [style*="height:240"] { height: 200px !important; }
+  [style*="height:220"] { height: 190px !important; }
+  [style*="height:200"] { height: 180px !important; }
+
+  /* Let hero CTA button rows wrap instead of overflowing with long labels */
+  [style*="gap:12px"][style*="justify-content:center"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Prevent long brand names / headings from pushing layout sideways */
+  section[id] h1,
+  section[id] h2,
+  section[id] h3,
+  .tpl-hero h1,
+  .tpl-hero h2,
+  [style*="font-size:clamp"] {
+    overflow-wrap: break-word;
+  }
+
+  /* Mobile hero polish: stack CTAs, center rows, tame oversized type */
+  section.tpl-hero button.tpl-btn,
+  section.tpl-hero a.tpl-btn {
+    flex: 1 1 100%;
+    max-width: 340px;
+  }
+  section.tpl-hero [style*="gap:12px"][style*="justify-content:center"] {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+  section.tpl-hero [style*="font-size:clamp(42px, 7vw, 80px)"] {
+    font-size: clamp(32px, 9vw, 42px) !important;
+    line-height: 1.05 !important;
+  }
+  section.tpl-hero [style*="font-size:clamp(36px"] {
+    font-size: clamp(30px, 8vw, 38px) !important;
+    line-height: 1.05 !important;
+  }
+  section.tpl-hero h1 {
+    font-size: clamp(30px, 9vw, 40px) !important;
+    line-height: 1.05 !important;
+  }
+  section.tpl-hero div[style*="gap:12px"][style*="display:flex"],
+  section.tpl-hero div[style*="gap:16px"][style*="display:flex"] {
+    justify-content: center !important;
+    margin: 0 auto;
+  }
+}
+
+/* Smooth in-page navigation between sections */
+html {
+  scroll-behavior: smooth;
+}
+section[id] {
+  scroll-margin-top: 72px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================================
+   Mobile polish: remaining edge cases and overflow fixes
+   NOTE: style selectors must use React 19's no-space format
+   (e.g. `padding:16px 48px`, NOT `padding: 16px 48px`).
+   ============================================================ */
+@media (max-width: 768px) {
+  nav[style*="padding:16px 48px"],
+  nav[style*="padding:20px 48px"],
+  nav[style*="padding:28px 48px"] {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Testimonial grids keep a 340px minimum that overflows 375px screens */
+  [style*="repeat(auto-fit, minmax(340px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  [style*="repeat(auto-fit, minmax(300px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  [style*="repeat(auto-fit, minmax(220px, 1fr))"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Nav variants that weren't covered by the 24px rule */
+  nav[style*="padding:16px 48px"],
+  nav[style*="padding:20px 48px"],
+  nav[style*="padding:28px 48px"] {
+    padding: 14px 20px !important;
+  }
+
+  /* Shrink fixed-height hero/story images so they don't dominate the fold */
+  [style*="height:500"] {
+    height: 320px !important;
+  }
+  [style*="height:440"] {
+    height: 280px !important;
+  }
+  [style*="height:420"] {
+    height: 300px !important;
+  }
+  [style*="height:400"] {
+    height: 260px !important;
+  }
+
+  /* Drop double padding on inner card grids (e.g. commerce benefits) */
+  [style*="padding:0 24px"] {
+    padding: 0 !important;
+  }
+
+  /* Let hero CTA button rows wrap instead of overflowing with long labels */
+  [style*="gap:12px"][style*="justify-content:center"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Prevent long brand names / headings from pushing layout sideways */
+  section[id] h1,
+  section[id] h2,
+  section[id] h3,
+  .tpl-hero h1,
+  .tpl-hero h2,
+  [style*="font-size:clamp"] {
+    overflow-wrap: break-word;
+  }
+}
+
+/* Compact the preview chrome when the builder itself is on a phone */
+@media (max-width: 640px) {
+  .preview-frame {
+    border-radius: 8px;
+  }
+  .preview-chrome {
+    padding: 8px 10px;
+  }
+  .preview-dot {
+    display: none;
+  }
+  .preview-url {
+    font-size: 10px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ============================================================
+   Small phones (<=480px): oversized hero type, buttons, nav rows
+   ============================================================ */
+@media (max-width: 480px) {
+  /* Cap oversized display type so headlines fit without clipping */
+  [style*="clamp(42px, 7vw, 80px)"] {
+    font-size: clamp(32px, 9vw, 42px) !important;
+    line-height: 1.05 !important;
+  }
+  [style*="clamp(36px, 6vw, 72px)"],
+  [style*="clamp(36px, 6vw, 64px)"] {
+    font-size: clamp(30px, 9vw, 38px) !important;
+    line-height: 1.05 !important;
+  }
+  [style*="clamp(36px, 5vw, 60px)"],
+  [style*="clamp(36px, 5vw, 56px)"] {
+    font-size: clamp(30px, 8vw, 36px) !important;
+  }
+  [style*="clamp(32px, 5vw, 56px)"],
+  [style*="clamp(32px, 5vw, 52px)"] {
+    font-size: clamp(28px, 8vw, 34px) !important;
+  }
+  [style*="clamp(40px, 5vw, 64px)"],
+  [style*="clamp(36px, 4vw, 52px)"] {
+    font-size: clamp(32px, 8vw, 44px) !important;
+  }
+  [style*="clamp(28px, 4vw, 46px)"] {
+    font-size: clamp(24px, 6vw, 30px) !important;
+  }
+
+  /* Buttons become comfortable touch targets and can wrap their labels */
+  .tpl-btn {
+    min-height: 44px;
+    white-space: normal;
+  }
+  [style*="padding:18px 52px"],
+  [style*="padding:18px 40px"],
+  [style*="padding:16px 40px"],
+  [style*="padding:14px 36px"] {
+    padding: 12px 22px !important;
+  }
+
+  /* Fixed-size headline fonts (templates that don't use clamp()) */
+  [style*="font-size:64px"] {
+    font-size: 34px !important;
+  }
+  [style*="font-size:60px"] {
+    font-size: 34px !important;
+  }
+  [style*="font-size:56px"] {
+    font-size: 32px !important;
+  }
+  [style*="font-size:52px"] {
+    font-size: 30px !important;
+  }
+  [style*="font-size:48px"] {
+    font-size: 30px !important;
+  }
+  [style*="font-size:44px"] {
+    font-size: 28px !important;
+  }
+  [style*="font-size:40px"] {
+    font-size: 26px !important;
+  }
+  [style*="font-size:36px"] {
+    font-size: 24px !important;
+  }
+  [style*="font-size:34px"] {
+    font-size: 24px !important;
+  }
+  [style*="line-height:1.05"] ~ * {
+    line-height: 1.1 !important;
+  }
+
+  /* Hero calls-to-action stack full-width for easy tapping */
+  section.tpl-hero button.tpl-btn,
+  section.tpl-hero a.tpl-btn {
+    flex: 1 1 100%;
+    max-width: 340px;
+  }
+
+  /* Wide nav link rows (forma, forge, commerce, northline, motion) wrap */
+  nav [style*="gap:28"],
+  nav [style*="gap:32"],
+  nav [style*="gap:36"] {
+    flex-wrap: wrap !important;
+    gap: 10px 14px !important;
+  }
+}
