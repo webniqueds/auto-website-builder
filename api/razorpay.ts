@@ -152,10 +152,15 @@ async function handleVerifyPayment(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing payment details' });
   }
 
-  // Demo orders (fake checkout) are always accepted so the flow can be tested
-  // end-to-end without real Razorpay keys.
+  // Demo orders (fake checkout) are accepted only when the demo flow is
+  // actually active — explicit RAZORPAY_DEMO=1, or live keys are not
+  // configured. With real keys present a `demo_` id is rejected, so a caller
+  // cannot mint free credits by inventing an order id.
   if (orderId.startsWith('demo_')) {
-    return res.status(200).json({ verified: true, demo: true, orderId, paymentId });
+    if (demoEnabled() || !process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(200).json({ verified: true, demo: true, orderId, paymentId });
+    }
+    return res.status(400).json({ error: 'Invalid payment signature' });
   }
 
   if (!verifySignature(orderId, paymentId, signature)) {

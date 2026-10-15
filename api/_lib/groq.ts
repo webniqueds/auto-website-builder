@@ -1,9 +1,10 @@
 const GROQ_BASE_URL = 'https://api.groq.com/openai/v1';
 
-// llama-3.1-8b-instant is Groq's fastest hosted model (~200 tok/s).
-// The previous value ('gpt-oss-20b') was an NVIDIA NIM model ID that doesn't
-// exist on Groq's API, causing every Groq call to fail silently.
-export const GROQ_MODEL = 'llama-3.1-8b-instant';
+// Groq retires hosted models on a rolling basis, so the default is
+// overridable via GROQ_MODEL. Verified live: qwen/qwen3.8-27b.
+// Earlier defaults that are now retired and return HTTP 404:
+//   'llama-3.1-8b-instant', 'gpt-oss-20b'
+export const GROQ_MODEL = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
 
 export async function callGroq(
   systemPrompt: string,

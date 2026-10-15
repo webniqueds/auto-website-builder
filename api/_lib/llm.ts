@@ -15,22 +15,24 @@ export interface LlmResult {
 }
 
 /**
- * Hard ceiling for the whole generation. Still keeps headroom so the request
- * always finishes with a clear result instead of hanging forever.
+ * Hard ceiling for the whole generation. Kept safely under the serverless
+ * function limit (Vercel Hobby caps `maxDuration` at 60s — see vercel.json)
+ * so the request always finishes with a clear result instead of being killed
+ * mid-stream before it can emit a `result` event.
  */
-const WALL_CLOCK_MS = 115_000;
+const WALL_CLOCK_MS = 55_000;
 
 /** Default per-provider budget for sequential fallback. */
 const MAX_CALL_MS = 25_000;
 
 /**
- * NIM can take ~60s on a cold start; give it room without letting it block
- * the whole pipeline. In the parallel race it can still be cancelled early
- * if Groq wins.
+ * NIM can take a while on a cold start; give it most of the wall-clock budget
+ * without letting it block the whole pipeline. In the parallel race it can
+ * still be cancelled early if Groq wins.
  */
-const NIM_BUDGET_MS = 90_000;
+const NIM_BUDGET_MS = 50_000;
 const GROQ_BUDGET_MS = 20_000;
-const OPENROUTER_BUDGET_MS = 60_000;
+const OPENROUTER_BUDGET_MS = 45_000;
 
 // ---------------------------------------------------------------------------
 // Sequential fallback — tries providers in order until one succeeds.

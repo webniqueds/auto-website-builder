@@ -16,7 +16,7 @@ function handleConfig(_req: VercelRequest, res: VercelResponse) {
 }
 
 async function handleStats(req: VercelRequest, res: VercelResponse) {
-  if (!isAdminRequest(req)) return res.status(403).json({ error: 'Forbidden' });
+  if (!(await isAdminRequest(req))) return res.status(403).json({ error: 'Forbidden' });
 
   const [projects, purchases, plans] = await Promise.all([
     countAllProjects(),

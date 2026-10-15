@@ -1,17 +1,16 @@
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
 export const OPENROUTER_DEFAULT_MODEL =
-  process.env.OPENROUTER_MODEL || 'poolside/laguna-s-2.1:free';
+  process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free';
 
 // Free-tier models share upstream rate-limit pools and frequently 429 under
 // load, so we cascade through several when the preferred model is throttled.
 // Verified responsive at the time of writing; re-check periodically.
+// Removed dead entries that now 404 (e.g. z-ai/glm-5.2:free).
 const OPENROUTER_FALLBACK_MODELS = [
-  'nvidia/nemotron-3-ultra-550b-a55b:free',
   'cohere/north-mini-code:free',
   'dots-studio/dots-3-note-preview:free',
   'google/gemma-4-26b-a4b-it:free',
-  'z-ai/glm-5.2:free',
 ];
 
 function modelCandidates(configuredModel: string): string[] {

@@ -379,6 +379,24 @@ export function buildCuratedImages(niche: string, _sectionKeys: string[], offset
   }
   map['contact'] = map['general-0'];
   map['location'] = map['general-1'];
+
+  // Section-specific image families some renderers request by name
+  // (crown/petals galleries, heirloom arrangements, petals weddings, shoreline
+  // listings). getSectionImages() reads `${section}-${i}`, so populate indexed
+  // keys; the bare key is kept for the singular getSectionImage() helper.
+  const imageFamilies: Record<string, string[]> = {
+    gallery: [map['work-0'], map['work-1'], map['work-2'], map['work-3']],
+    arrangements: [map['service-0'], map['service-1'], map['service-2'], map['service-3']],
+    weddings: [map['work-0'], map['work-1'], map['work-2'], map['work-3']],
+    listings: [map['product-0'], map['product-1'], map['product-2'], map['product-3']],
+  };
+  for (const [name, arr] of Object.entries(imageFamilies)) {
+    const clean = arr.filter(Boolean);
+    if (clean.length === 0) continue;
+    map[name] = clean[0];
+    for (let i = 0; i < 8; i++) map[`${name}-${i}`] = clean[i % clean.length];
+  }
+
   return map;
 }
 
@@ -442,6 +460,20 @@ export async function fetchNicheImages(
   // general fallbacks
   for (let i = 0; i < 4; i++) {
     result[`general-${i}`] = pick(images.general, i);
+  }
+
+  // Section-specific image families (see buildCuratedImages).
+  const imageFamilies: Record<string, string[]> = {
+    gallery: [result['work-0'], result['work-1'], result['work-2'], result['work-3']],
+    arrangements: [result['service-0'], result['service-1'], result['service-2'], result['service-3']],
+    weddings: [result['work-0'], result['work-1'], result['work-2'], result['work-3']],
+    listings: [result['product-0'], result['product-1'], result['product-2'], result['product-3']],
+  };
+  for (const [name, arr] of Object.entries(imageFamilies)) {
+    const clean = arr.filter(Boolean);
+    if (clean.length === 0) continue;
+    result[name] = clean[0];
+    for (let i = 0; i < 8; i++) result[`${name}-${i}`] = clean[i % clean.length];
   }
 
   // If Unsplash API key available, try to fetch better images

@@ -2,15 +2,26 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SignedIn, SignedOut, UserButton, SignInButton, useUser } from '@clerk/clerk-react';
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  useUser,
+  useAuth,
+} from '@clerk/clerk-react';
 import { cn } from '../lib/utils';
-import { setSyncUser, fetchUserState } from '../lib/serverSync';
+import { setSyncUser, fetchUserState, setTokenGetter } from '../lib/serverSync';
 import { setCredits, mergeRemotePurchases } from '../lib/plans';
 
 const navItems = [
   { to: '/', label: 'Templates' },
   { to: '/projects', label: 'My Projects' },
   { to: '/pricing', label: 'Pricing' },
+  { to: '/about', label: 'About us' },
+  { to: '/contact', label: 'Contact us' },
+  { to: '/terms', label: 'Terms' },
 ];
 
 /**
@@ -22,9 +33,16 @@ const navItems = [
  */
 function SyncUser() {
   const { isSignedIn, user } = useUser();
+  const { getToken } = useAuth();
   useEffect(() => {
     const userId = isSignedIn ? (user?.id ?? null) : null;
     setSyncUser(userId);
+    // Register a token getter so every API call is authenticated.
+    setTokenGetter(userId ? () => getToken() : null);
+    return () => setTokenGetter(null);
+  }, [isSignedIn, user, getToken]);
+  useEffect(() => {
+    const userId = isSignedIn ? (user?.id ?? null) : null;
     if (userId) {
       void fetchUserState(userId).then((state) => {
         if (!state) return;
@@ -89,8 +107,11 @@ export default function Header() {
       </SignedIn>
       <SignedOut>
         <SignInButton mode="modal">
-          <button className="btn-primary h-8 !px-4 !py-0 text-[12px]">Sign in</button>
+          <button className="btn-secondary h-8 !px-3.5 !py-0 text-[12px]">Sign in</button>
         </SignInButton>
+        <SignUpButton mode="modal">
+          <button className="btn-primary h-8 !px-3.5 !py-0 text-[12px]">Sign up</button>
+        </SignUpButton>
       </SignedOut>
     </>
   );
@@ -116,7 +137,7 @@ export default function Header() {
             Website Builder
           </span>
           <span className="text-[10px] tracking-wide text-[var(--app-muted)]">
-            Template-driven web design
+            by WB Roots
           </span>
         </div>
 

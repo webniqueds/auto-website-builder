@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { listPurchases, getUser, incrementCreditsSpent } from './_lib/db.js';
+import { getVerifiedUserId } from './_lib/auth.js';
 
 const FREE_START_CREDITS = 3;
 
@@ -27,7 +28,8 @@ function isSpend(req: VercelRequest): boolean {
 async function handleMe(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const userId = String(req.query.userId ?? '').trim();
+  const verified = await getVerifiedUserId(req);
+  const userId = verified || String(req.query.userId ?? '').trim();
   if (!userId) return res.status(400).json({ error: 'Missing userId' });
 
   try {
@@ -54,7 +56,8 @@ async function handleSpend(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const body = (req.body ?? {}) as Record<string, unknown>;
-  const userId = typeof body.userId === 'string' ? body.userId.trim() : '';
+  const verified = await getVerifiedUserId(req);
+  const userId = verified || (typeof body.userId === 'string' ? body.userId.trim() : '');
   const amount = typeof body.amount === 'number' && body.amount > 0 ? body.amount : 0;
 
   if (!userId || amount === 0) {

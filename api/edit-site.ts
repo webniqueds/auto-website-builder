@@ -41,21 +41,35 @@ function stripImages(obj: unknown): unknown {
   return obj;
 }
 
-function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
-  const result = { ...target };
-  for (const key of Object.keys(source)) {
-    const srcVal = source[key];
-    const tgtVal = result[key];
-    if (
-      srcVal && typeof srcVal === 'object' && !Array.isArray(srcVal) &&
-      tgtVal && typeof tgtVal === 'object' && !Array.isArray(tgtVal)
-    ) {
-      result[key] = deepMerge(tgtVal as Record<string, unknown>, srcVal as Record<string, unknown>);
-    } else {
-      result[key] = srcVal;
-    }
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+/**
+ * Deep merge that merges arrays element-wise (keeps any trailing target items
+ * the AI omitted) instead of replacing them wholesale. This mirrors the
+ * generation merge in `generate-site-v2.ts` so a partial edit like "change the
+ * second service" can never wipe the remaining services.
+ */
+function deepMerge(target: unknown, source: unknown): unknown {
+  if (source === null || source === undefined) return target;
+
+  if (Array.isArray(target)) {
+    if (!Array.isArray(source) || source.length === 0) return target;
+    return target.map((tgt, i) => (i < source.length ? deepMerge(tgt, source[i]) : tgt));
   }
-  return result;
+
+  if (isRecord(target) && isRecord(source)) {
+    const result: Record<string, unknown> = { ...target };
+    for (const key of Object.keys(source)) {
+      const srcVal = source[key];
+      if (srcVal === undefined) continue;
+      result[key] = deepMerge(target[key], srcVal);
+    }
+    return result;
+  }
+
+  return source;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -108,7 +122,7 @@ Return only the fields that need to change.`;
       return res.status(500).json({ error: 'AI returned an unparseable response. Please try again.' });
     }
 
-    const merged = deepMerge(currentConfig as Record<string, unknown>, parsed);
+    const merged = deepMerge(currentConfig, parsed) as Record<string, unknown>;
     return res.status(200).json(merged);
   } catch (err) {
     console.error('[edit] Fatal error:', err);

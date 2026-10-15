@@ -66,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    if (!isAdminRequest(req)) return res.status(403).json({ error: 'Forbidden' });
+    if (!(await isAdminRequest(req))) return res.status(403).json({ error: 'Forbidden' });
 
     if (isReset(req)) {
       await replaceAllPlans(DEFAULT_PLANS);
@@ -98,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'DELETE') {
-    if (!isAdminRequest(req)) return res.status(403).json({ error: 'Forbidden' });
+    if (!(await isAdminRequest(req))) return res.status(403).json({ error: 'Forbidden' });
     const id = String(req.query.id ?? '');
     if (!id) return res.status(400).json({ error: 'Missing plan id' });
     await deletePlanRecord(id);

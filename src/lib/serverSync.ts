@@ -21,11 +21,38 @@ export function getSyncUser(): string {
   return currentUserId;
 }
 
+/**
+ * Optional getter for the current Clerk session token. When the provider (the
+ * Header's SyncUser effect) registers it, every API call is authenticated with
+ * `Authorization: Bearer <token>` so the server can verify the caller instead
+ * of trusting the userId in the request body.
+ */
+let tokenGetter: (() => Promise<string | null>) | null = null;
+
+export function setTokenGetter(getter: (() => Promise<string | null>) | null): void {
+  tokenGetter = getter;
+}
+
+async function authHeaders(): Promise<Record<string, string>> {
+  if (!tokenGetter) return {};
+  try {
+    const token = await tokenGetter();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 async function fetchWithTimeout(input: string, init: RequestInit, ms = 8000): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
   try {
-    return await fetch(input, { ...init, signal: controller.signal });
+    const auth = await authHeaders();
+    return await fetch(input, {
+      ...init,
+      headers: { ...(init.headers as Record<string, string> | undefined), ...auth },
+      signal: controller.signal,
+    });
   } finally {
     clearTimeout(timer);
   }

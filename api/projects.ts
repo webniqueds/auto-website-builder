@@ -6,6 +6,7 @@ import {
   deleteProjectRecord,
   type StoredProject,
 } from './_lib/db.js';
+import { getVerifiedUserId } from './_lib/auth.js';
 
 export function toStoredProject(body: Record<string, unknown>): StoredProject | null {
   const userId = typeof body.userId === 'string' ? body.userId : '';
@@ -37,7 +38,7 @@ function itemId(req: VercelRequest): string {
 
 /**
  * One serverless function for all project routes:
- *   GET  /api/projects?userId=...   -> list (no config, for perf)
+ *   GET  /api/projects?userId=...   -> list (full records incl. config)
  *   POST /api/projects              -> upsert full project
  *   GET  /api/projects/:id          -> full project
  *   PUT  /api/projects/:id          -> upsert full project
@@ -71,17 +72,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const doc = toStoredProject((req.body ?? {}) as Record<string, unknown>);
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const verified = await getVerifiedUserId(req);
+    const doc = toStoredProject(verified ? { ...body, userId: verified } : body);
     if (!doc) return res.status(400).json({ error: 'Missing userId or project id' });
     await saveProject(doc);
     return res.status(200).json({ ok: true, id: doc.id });
   }
 
   if (req.method === 'GET') {
-    const userId = String(req.query.userId ?? '');
+    const verified = await getVerifiedUserId(req);
+    const userId = verified || String(req.query.userId ?? '');
     if (!userId) return res.status(400).json({ error: 'Missing userId' });
+    // Full config is included so cross-device restore works: the client's
+    // mergeRemoteProjects() skips records that have no config, and Preview
+    // needs the config to render a project opened on a new device.
     const items = await listProjects(userId);
-    return res.status(200).json({ items: items.map(({ config: _cfg, _id, ...rest }) => rest) });
+    return res.status(200).json({ items: items.map(({ _id, ...rest }) => rest) });
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
